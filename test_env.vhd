@@ -84,7 +84,7 @@ RD2: out std_logic_vector(15 downto 0);
 Ext_Imm:out std_logic_vector(15 downto 0);
 func: out std_logic_vector(2 downto 0);
 sa: out std_logic;
-wa: in std_logic_vector(15 downto 0));
+wa: in std_logic_vector(2 downto 0));
 end component;
 
 component CtrlUnit is
@@ -157,19 +157,18 @@ signal memData: std_logic_vector(15 downto 0);
 signal ALUResMem: std_logic_vector(15 downto 0);
 
 signal instrID, pcID, PCEX, RD1EX, RD2EX, ExtEX, jmpMEM, ALUResM, branchMem, RD2Mem, RDataWb, ALUResWB: std_logic_vector(15 downto 0);
-signal MemToRegEx, beqEx, funcEx : std_logic_vector(2 downto 0);
-signal saEx, ZMem: std_logic;
+signal MemToRegEx, beqEx, funcEx, rtEx, rdEx, MEx, MMem,wa,waMem, waWb: std_logic_vector(2 downto 0);
+signal saEx, ZMem, rd11Mem: std_logic;
 signal ctrlEx: std_logic_vector(4 downto 0);
-signal MEx, WBEx, MMem, WBMem, WBWb: std_logic_vector(1 downto 0);
+signal WBEx, WBMem, WBWb: std_logic_vector(1 downto 0);
 begin
 
  debounce1: MPG port map(btn(0), btn0, clk);
  debounce2: MPG port map(btn(1), btn1, clk);
 
- --WD<=RD1+RD2;
- WD <= ALUResMem when MemToReg='0' else memData;
+ WD <= ALUResWb when WBWb(1)='0' else RDataWb;
 
-idReg: process(clk)
+idReg: process(clk,btn1)
     begin
     if rising_edge(clk) then
         if btn1='1' then 
@@ -179,7 +178,7 @@ idReg: process(clk)
      end if;
  end process idReg;
  
- exReg: process(clk)
+ exReg: process(clk,btn1)
  begin
     if rising_edge(clk) then
         if btn1='1' then
@@ -197,11 +196,13 @@ idReg: process(clk)
             Mex(2)<=Branch;
             WBEx(0)<=RegWrite;
             WBEx(1)<=MemToReg;
+            rtEx<=instrId(9 downto 7);
+            rdEx<=instrId(6 downto 4);
          end if;
      end if;
  end process;
  
- memReg: process(clk)
+ memReg: process(clk,btn1)
  begin
     if rising_edge(clk) then
         if btn1='1'then 
@@ -211,33 +212,38 @@ idReg: process(clk)
             ALUResMem<=ALURes;
             branchMem<=branchAddr;
             RD2Mem<=RD2Ex;
-            --wa???
+            waMem<=wa;
+            rd11Mem<=RD1Ex(15);
          end if;
      end if;
  end process;
  
- wbReg: process(clk)
+ wbReg: process(clk,btn1)
  begin
     if rising_edge(clk) then
         if btn1='1' then
             ALUResWB<=ALUResMem;
             WBWb<=WBMem;
+            RDataWb<=MemData;
+            waWb<=waMem;
         end if;
      end if;
  end process;
               
  iff: InstrFetch port map(clk,branchMem,jmpAddr,s2,Jump,btn0,btn1,digits1,digits2);
- ctrlU: CtrlUnit port map(digits1,RegDst,ExtOp,ALUSrc,Branch,Jump,ALUOp,MemWrite,MemtoReg,RegWrite,bEqZ);
- instrD: InstrDecode port map(clk,WBWb(1),instrId,RegDst,ExtOp,WD,RD1,RD2,ext,func,sa,);
- InstrExec: InstrExecute port map (digits2, RD1, RD2, ext, func, sa, ALUSrc, ALUOp, zero, ALURes, branchAddr);
- MemU: MemUnit port map (clk,MemWr,ALURes,RD2,memData,ALUResMem);
+ ctrlU: CtrlUnit port map(instrId,RegDst,ExtOp,ALUSrc,Branch,Jump,ALUOp,MemWrite,MemtoReg,RegWrite,bEqZ);
+ instrD: InstrDecode port map(clk,RegWr,instrId,RegDst,ExtOp,WD,RD1,RD2,ext,func,sa,waWb);
+ InstrExec: InstrExecute port map (PCEX, RD1Ex, RD2Ex, ExtEx, funcEx, saEx, ctrlEx(3), ctrlEx(2 downto 0), zero, ALURes, branchAddr);
+ MemU: MemUnit port map (clk,MemWr,ALUResMem,RD2Mem,memData,ALUResMem);
  
- RegWr<=RegWrite and btn1;
- MemWr<=MemWrite and btn1;
+ wa<=rtEx when ctrlEx(4)='0' else rdEx;
  
- s1<=bEqZ and RD1(15);
- s2<=s1 or (Branch and zero);
- jmpAddr<=digits2(15 downto 14) & digits2(12 downto 0) & '0';
+ RegWr<=WBWb(0) and btn1;
+ MemWr<=MMem(0) and btn1;
+ 
+ s1<=MMem(1) and rd11Mem;
+ s2<=s1 or (MMem(2) and ZMem);
+ jmpAddr<=PCId(15 downto 14) & instrId(12 downto 0) & '0';
  
  process(sw(7 downto 5))
  begin
@@ -247,7 +253,7 @@ idReg: process(clk)
  when "010"=>digits<=RD1;
  when "011"=>digits<=RD2;
  when "100"=>digits<=ext;
- when "101"=>digits<=ALURes;
+ when "101"=>digits<=ALUResWb;
  when "111"=>digits<=wd;
  when others=>digits<=ext;
  end case;

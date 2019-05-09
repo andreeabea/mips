@@ -45,7 +45,7 @@ RD2: out std_logic_vector(15 downto 0);
 Ext_Imm:out std_logic_vector(15 downto 0);
 func: out std_logic_vector(2 downto 0);
 sa: out std_logic;
-wa: in std_logic_vector(15 downto 0));
+wa: in std_logic_vector(2 downto 0));
 end InstrDecode;
 
 architecture Behavioral of InstrDecode is
@@ -72,7 +72,7 @@ begin
 rs<=Instr(12 downto 10);
 rt<=Instr(9 downto 7);
 rd<=Instr(6 downto 4);
-reg: reg_file port map(clk,rs,rt,mux_out,WD,RegWrite,rd1,rd2);
+reg: reg_file port map(clk,rs,rt,wa,WD,RegWrite,rd1,rd2);
 
 --mux: process (RegDst,Instr)
 --begin
@@ -81,7 +81,7 @@ reg: reg_file port map(clk,rs,rt,mux_out,WD,RegWrite,rd1,rd2);
 --when '1'=>mux_out<=rd;
 --end case;
 --end process mux;
-mux_out<=wa;
+--mux_out<=wa;
 func<=Instr(2 downto 0);
 sa<=Instr(3);
 ex<=(others=>Instr(6));
