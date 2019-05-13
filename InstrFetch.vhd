@@ -80,6 +80,7 @@ begin
 case PCsrc is
 when '0' => muxout<=adder;
 when '1'=> muxout<=branchAddr;
+when others=>muxout<=(others=>'0');
 end case;
 end process mux1;
 
@@ -88,6 +89,7 @@ begin
 case jump is
 when '0'=> ad<=muxout;
 when '1'=> ad<=jumpAddr;
+when others=>ad<=(others=>'0');
 end case;
 end process mux2;
 

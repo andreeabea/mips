@@ -133,12 +133,12 @@ when "000"=>RegDst<='1';----------R-type
                                             MemtoReg<='0';
                                             RegWrite<='0';  
                                             bEqz<='0';    
-    when others=>RegDst<='0';------------beq
-                              ExtOp<='1';
+    when others=>RegDst<='0';
+                              ExtOp<='0';
                               ALUSrc<='0';
-                              Branch<='1';
+                              Branch<='0';
                               Jump<='0';
-                              ALUOp<="100";
+                              ALUOp<="111";
                               MemWrite<='0';
                               MemtoReg<='0';
                               RegWrite<='0';  

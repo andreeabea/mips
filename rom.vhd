@@ -44,21 +44,21 @@ architecture Behavioral of rom is
 
 type content is array(0 to 255) of std_logic_vector(15 downto 0);
 signal mem: content :=(
-x"0DA0", --add
-x"0531", --sub
-x"023A", --sll
-x"01AB", --srl
-x"0994", --and
-x"1155", --or
-x"1326", --xor
-x"0EA7", --sllv
-x"2888", --addi
-x"5101", --lw
-x"6D01", --sw
-x"8984", --beq
-x"A883", --xori
-x"C981", --bltz
-x"E010", --jmp
+x"4500", --lw
+x"0000",
+x"0000",
+x"0000",
+x"09B0", --add
+x"1141", --sub 
+x"2481", --addi 
+x"8681", --beq
+x"0000",
+x"0000", 
+x"0000",
+x"E000", --jmp
+x"0000",
+x"7980", --sw 
+x"7E00", --sw
 others => x"0000" );
 
 begin

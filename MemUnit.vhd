@@ -45,11 +45,12 @@ architecture Behavioral of MemUnit is
 
 type memory is array (0 to 7) of std_logic_vector(15 downto 0);
 signal mem: memory :=(
-x"0000",
 x"0001",
-x"1000",
-x"0101",
-x"1100",
+x"0002",
+x"0003",
+x"0004",
+x"0005",
+x"0006",
 others=>x"0000");
 begin
 

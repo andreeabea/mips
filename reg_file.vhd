@@ -47,22 +47,13 @@ end reg_file;
 architecture Behavioral of reg_file is
 type reg_array is array (0 to 15) of std_logic_vector(15 downto 0);
 signal reg_file : reg_array :=(
-  x"0001", 
-x"0002", 
-x"0003",
-x"0004",
-x"0005",
-x"0006",
-x"0007",
-x"0008",
-x"0009",
-x"000A",
-x"000B",
-x"000C",
-x"000D",
-x"000E",
-x"000F",
-x"0010");
+ x"0000",
+x"0000",
+x"1000",
+x"0000",
+x"0000",
+x"0100",
+others=>x"0000");
 
 begin
 process(clk)

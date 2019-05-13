@@ -71,7 +71,7 @@ begin
             when "101" => ALUCtrl<="110"; --xori 
             when "110" => ALUCtrl<="110"; --bltz
             when "111" => ALUCtrl<="110"; --jmp
-            when others => ALUCtrl <= "100";
+            when others => ALUCtrl <= "000";
         end case;
     end process;
     
