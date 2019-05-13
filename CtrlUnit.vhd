@@ -89,7 +89,7 @@ when "000"=>RegDst<='1';----------R-type
                  ALUSrc<='1';
                  Branch<='0';
                  Jump<='0';
-                 ALUOp<="011";
+                 ALUOp<="000";
                  MemWrite<='1';
                  MemtoReg<='0';
                  RegWrite<='0';  
@@ -103,7 +103,7 @@ when "000"=>RegDst<='1';----------R-type
                MemWrite<='0';
                MemtoReg<='0';
                RegWrite<='0'; 
-               bEqz<='1';  
+               bEqz<='0';  
      when "101"=>RegDst<='0';------------xori
                              ExtOp<='1';
                              ALUSrc<='1';
